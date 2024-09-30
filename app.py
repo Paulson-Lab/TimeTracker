@@ -1,7 +1,14 @@
-from flask import Flask, jsonify, request, render_template, send_file
+from flask import Flask, jsonify, request, render_template
 import threading
 import time
-import win32gui
+import sys
+
+# Conditionally import pywin32 for Windows systems
+if sys.platform == "win32":
+    import win32gui
+else:
+    print("pywin32 is not supported on this platform.")
+
 from pynput.keyboard import Listener as KeyboardListener
 from pynput.mouse import Listener as MouseListener
 
@@ -13,8 +20,11 @@ tracking_active = False
 active_window = None
 start_time = None
 
-# Function to get the active window title
+# Function to get the active window title (only works on Windows)
 def get_active_window():
+    if sys.platform != "win32":
+        return "Window tracking not supported on this platform"
+    
     try:
         window = win32gui.GetForegroundWindow()
         return win32gui.GetWindowText(window)
@@ -67,12 +77,10 @@ def on_click(x, y, button, pressed):
             app_data[active_window] = {"time": 0, "keystrokes": 0, "mouse_clicks": 0}
         app_data[active_window]["mouse_clicks"] += 1
 
-# Flask route for the main web page
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# Flask route to start tracking
 @app.route('/start_tracking', methods=['POST'])
 def start_tracking():
     global tracking_active, app_data
@@ -91,25 +99,11 @@ def start_tracking():
 
     return jsonify({"status": "Tracking started"})
 
-# Flask route to stop tracking
 @app.route('/stop_tracking', methods=['POST'])
 def stop_tracking():
     global tracking_active
     tracking_active = False
     return jsonify(app_data)
-
-# Flask route to receive tracking data from the helper app
-@app.route('/track_data', methods=['POST'])
-def track_data():
-    data = request.json
-    print(f"Received data: {data}")
-    # Optionally, you can store the data or process it further
-    return jsonify({'status': 'success', 'data': data})
-
-# Flask route to download the helper app (Python executable)
-@app.route('/download_helper_app', methods=['GET'])
-def download_helper_app():
-    return send_file('static/helper_app.exe', as_attachment=True)
 
 if __name__ == '__main__':
     app.run(debug=True)
