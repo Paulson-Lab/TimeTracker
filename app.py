@@ -3,11 +3,14 @@ import threading
 import time
 import sys
 
-# Conditionally import pywin32 for Windows systems
+# Conditionally import pywin32 or other Windows-specific libraries for local testing
 if sys.platform == "win32":
-    import win32gui
+    try:
+        import win32gui
+    except ImportError:
+        win32gui = None
 else:
-    print("pywin32 is not supported on this platform.")
+    print("pywin32/pywinauto is not supported on this platform.")
 
 from pynput.keyboard import Listener as KeyboardListener
 from pynput.mouse import Listener as MouseListener
@@ -22,7 +25,7 @@ start_time = None
 
 # Function to get the active window title (only works on Windows)
 def get_active_window():
-    if sys.platform != "win32":
+    if sys.platform != "win32" or not win32gui:
         return "Window tracking not supported on this platform"
     
     try:
