@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Tracker</title>
+    
+    <!-- Font Awesome CDN for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+
+    <style>
+        /* General Page Styles */
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 40px;
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-align: center;
+        }
+
+        /* Logo Styles */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-container img {
+            width: 180px;
+            height: auto;
+        }
+
+        h1 {
+            color: #0033cc;
+            margin-bottom: 10px;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        /* Primary Button Styles */
+        button {
+            background-color: #0033cc;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            font-size: 16px;
+            margin: 15px;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background-color: #0052cc;
+            box-shadow: 0 4px 12px rgba(0, 51, 204, 0.15);
+        }
+
+        button:focus {
+            outline: none;
+        }
+
+        /* Active Button (After Click) */
+        .active-btn {
+            background-color: #34c759;
+            color: white;
+            box-shadow: 0 4px 12px rgba(52, 199, 89, 0.3);
+        }
+
+        h2 {
+            margin-top: 40px;
+            color: #0033cc;
+            font-size: 1.5rem;
+            font-weight: 500;
+        }
+
+        /* Totals Box Styling */
+        .totals-container {
+            display: flex;
+            justify-content: space-around;
+            margin: 40px 0 20px;
+            flex-wrap: wrap;
+        }
+
+        .totals-box {
+            background-color: #f4f5f7;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            width: 200px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 10px;
+        }
+
+        .totals-box i {
+            font-size: 2rem;
+            color: #0033cc;
+            margin-bottom: 10px;
+        }
+
+        .totals-box p {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #0033cc;
+        }
+
+        .totals-box small {
+            font-size: 0.9rem;
+            color: #555;
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 1rem;
+            border-radius: 8px;
+            background-color: #ffffff;
+            color: #333;
+            overflow: hidden;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        th, td {
+            padding: 15px 20px;
+            text-align: left;
+            border-bottom: 1px solid #e6e8ec;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 350px;
+        }
+
+        th {
+            background-color: #f4f5f7;
+            color: #0033cc;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        td {
+            background-color: #ffffff;
+        }
+
+        tr:nth-child(even) td {
+            background-color: #f9f9fb;
+        }
+
+        tr:hover td {
+            background-color: #f0f0f7;
+        }
+
+        .no-data {
+            color: #999;
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        /* Results box styling */
+        #results {
+            background-color: #f9f9fb;
+            border: 1px solid #e6e8ec;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 30px;
+            font-family: 'Inter', Arial, sans-serif;
+            position: relative;
+        }
+
+        /* Modern Trashcan Icon for Clearing Results */
+        .clear-icon {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 1.5rem;
+            color: #999;
+            transition: color 0.3s ease;
+        }
+
+        .clear-icon:hover {
+            color: #ff0000;
+        }
+
+        /* Animation for totals */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .totals-box {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Styling for Download Helper Button */
+        .download-helper-btn {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: white;
+            color: #0033cc;
+            border: 2px solid #0033cc;
+            padding: 8px 16px;
+            font-size: 12px;
+            margin: 30px auto 15px; /* Added extra margin to move it down */
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            width: 160px;
+        }
+
+        .download-helper-btn:hover {
+            background-color: #f1f4f8;
+            box-shadow: 0 4px 12px rgba(0, 51, 204, 0.15);
+        }
+
+        .download-helper-btn i {
+            margin-right: 8px;
+            font-size: 1rem;
+        }
+    </style>
+
+    <script>
+        // Start tracking by calling the Flask route
+        function startTracking() {
+            fetch('/start_tracking', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    document.getElementById('status').innerText = "Tracking started...";
+                });
+        }
+
+        // Stop tracking by calling the Flask route
+        function stopTracking() {
+            fetch('/stop_tracking', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data);
+                    document.getElementById('status').innerText = "Tracking stopped.";
+                    displayResults(data);
+                });
+        }
+
+        // Clear the tracking results
+        function clearTracking() {
+            const resultsContainer = document.getElementById("results");
+            resultsContainer.innerHTML = '<p class="no-data">No data yet...</p>';
+            document.getElementById('totals').innerHTML = ''; // Clear the totals
+            console.log("Tracking cleared.");
+        }
+
+        // Display received tracking data in a table
+        function displayResults(data) {
+            const resultsContainer = document.getElementById("results");
+            resultsContainer.innerHTML = "";
+
+            if (Object.keys(data).length === 0) {
+                resultsContainer.innerHTML = '<p class="no-data">No data yet...</p>';
+                return;
+            }
+
+            // Totals calculations
+            let totalTime = 0;
+            let totalKeystrokes = 0;
+            let totalMouseClicks = 0;
+
+            let table = document.createElement("table");
+            let header = table.createTHead();
+            let headerRow = header.insertRow(0);
+            headerRow.innerHTML = `<th>Application</th><th>Time Spent (s)</th><th>Keystrokes</th><th>Mouse Clicks</th>`;
+
+            let tbody = table.createTBody();
+            for (const [app, details] of Object.entries(data)) {
+                let row = tbody.insertRow();
+                row.innerHTML = `<td title="${app}">${app}</td><td>${details.time.toFixed(2)}</td><td>${details.keystrokes}</td><td>${details.mouse_clicks}</td>`;
+
+                // Add to totals
+                totalTime += details.time;
+                totalKeystrokes += details.keystrokes;
+                totalMouseClicks += details.mouse_clicks;
+            }
+
+            resultsContainer.appendChild(table);
+
+            // Display totals at the top
+            displayTotals(totalTime, totalKeystrokes, totalMouseClicks);
+
+            // Create the trashcan icon to clear results
+            const clearIcon = document.createElement('i');
+            clearIcon.classList.add('fas', 'fa-trash', 'clear-icon');
+            clearIcon.onclick = clearTracking;
+            resultsContainer.appendChild(clearIcon);
+        }
+
+        // Display totals in animated boxes
+        function displayTotals(time, keystrokes, clicks) {
+            const totalsContainer = document.getElementById("totals");
+            totalsContainer.innerHTML = `
+                <div class="totals-box">
+                    <i class="fas fa-clock"></i>
+                    <p>${time.toFixed(2)} s</p>
+                    <small>Total Time Spent</small>
+                </div>
+                <div class="totals-box">
+                    <i class="fas fa-keyboard"></i>
+                    <p>${keystrokes}</p>
+                    <small>Total Keystrokes</small>
+                </div>
+                <div class="totals-box">
+                    <i class="fas fa-mouse-pointer"></i>
+                    <p>${clicks}</p>
+                    <small>Total Mouse Clicks</small>
+                </div>
+            `;
+        }
+
+        // Function to download the helper app (Python executable)
+        function downloadHelperApp() {
+            window.location.href = '/download_helper_app';
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <!-- Logo Section -->
+        <div class="logo-container">
+            <img src="static/commure-logo.png" alt="Commure Logo">
+        </div>
+
+        <h1>Time Tracker</h1>
+
+        <button id="startButton" onclick="startTracking()">Start Tracking</button>
+        <button onclick="stopTracking()">Stop Tracking</button>
+        <p id="status">Tracking status: Not started</p>
+
+        <!-- Totals Display Section -->
+        <div id="totals" class="totals-container"></div>
+
+        <h2>Results</h2>
+        <div id="results">
+            <p class="no-data">No data yet...</p>
+        </div>
+
+        <!-- Download Helper Button Section -->
+        <button class="download-helper-btn" onclick="downloadHelperApp()">
+            <i class="fab fa-windows"></i> Download Helper App
+        </button>
+    </div>
+</body>
+</html>
